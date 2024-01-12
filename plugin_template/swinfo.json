@@ -5,10 +5,10 @@
   "name": "Kapybara Space Program",
   "description": "A KSP2 Mod to replace Kerbals with Kapybaras",
   "source": "",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "version_check": "",
   "ksp2_version": {
-    "min": "0.1.4",
+    "min": "0.2.0",
     "max": "*"
   },
   "dependencies": [

@@ -8,6 +8,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using KSP.Game;
 using KSP.Modding.Variety;
+using KSP.Sim.impl;
 using KSP.UI;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -54,24 +55,39 @@ public class KapybaraSpaceProgramPlugin : BaseSpaceWarpPlugin
                 ["mesh_male_eyes_01"] = "mesh_male_head_01",
                 ["mesh_female_eyes_01"] = "mesh_female_head_01"
             },
-            HeadObjectNames = new List<string>
-            {
+            HeadObjectNames =
+            [
                 "mesh_male_head_01",
                 "mesh_female_head_01"
-            },
-            FemaleObjectNames = new List<string> {"mesh_female_head_01", "mesh_female_eyes_01"},
-            MaleObjectNames = new List<string> {"mesh_male_head_01","mesh_male_eyes_01"},
+            ],
+            FemaleObjectNames = ["mesh_female_head_01", "mesh_female_eyes_01"],
+            MaleObjectNames = ["mesh_male_head_01", "mesh_male_eyes_01"],
         },
         ["Realistic"] = new KapybaraInfo
         {
-            Filename = "realisticcapybara.fbx",
+            Filename = "realisticcapybara.prefab",
             LocalPosition = new Vector3(-0.18f, -0.0047f, 0),
             LocalRotation = Quaternion.Euler(90, 270, 0),
             LocalScale = new Vector3(0.85f, 0.75f, 0.75f),
-            ReparentingMap = new(),
-            HeadObjectNames = new List<string> {"Head"},
-            FemaleObjectNames = new(),
-            MaleObjectNames = new()
+            ReparentingMap = new Dictionary<string, string>(),
+            HeadObjectNames = ["Head"],
+            FemaleObjectNames = [],
+            MaleObjectNames = []
+        },
+        ["Realistic V2"] = new KapybaraInfo
+        {
+            Filename = "realistic_kapybara.prefab",
+            LocalPosition = new Vector3(-0.18f, -0.0047f, 0),
+            LocalRotation = Quaternion.Euler(90, 270, 0),
+            LocalScale = new Vector3(0.85f, 0.75f, 0.75f),
+            ReparentingMap = new Dictionary<string, string>(),
+            HeadObjectNames =
+            [
+                "mesh_male_head_01",
+                "mesh_female_head_01"
+            ],
+            FemaleObjectNames = ["mesh_female_head_01"],
+            MaleObjectNames = ["mesh_male_head_01"],
         }
     };
 
@@ -81,7 +97,7 @@ public class KapybaraSpaceProgramPlugin : BaseSpaceWarpPlugin
     public override void OnPreInitialized()
     {
         Instance = this;
-        CurrentlySelectedKapybaraType = Config.Bind("Kapybara", "Kapybara Type", "Normal",
+        CurrentlySelectedKapybaraType = Config.Bind("Kapybara", "Kapybara Type", "Realistic V2",
             new ConfigDescription("What type of Kapybara model do you wish to use",new AcceptableValueList<string>(KapybaraInfos.Keys.ToArray())));
         Harmony.CreateAndPatchAll(GetType());
     }
@@ -376,5 +392,12 @@ public class KapybaraSpaceProgramPlugin : BaseSpaceWarpPlugin
         {
             kerbal.Attributes.SetAttribute<string>("SURNAME", GetLastName(kerbal.Attributes.FirstName));
         }
+    }
+    
+    [HarmonyPatch(typeof(KerbalBehavior),"IFixedUpdate.OnFixedUpdate")]
+    [HarmonyFinalizer]
+    private static Exception SuppressExceptions()
+    {
+        return null;
     }
 }
